@@ -6,7 +6,10 @@ def main():
     video_frames = read_video("input_videos/video_1.mp4")
 
     player_tracker = PlayerTracker("models/player_detector.pt")
-    player_tracks = player_tracker.get_object_tracks(video_frames)
+    player_tracks = player_tracker.get_object_tracks(video_frames,
+                                                     read_from_stub = True,
+                                                     stub_path = "stubs/player_tracks_stubs.pkl"
+                                                     )
 
     print(player_tracks)
 
