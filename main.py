@@ -1,12 +1,13 @@
 from utils import read_video, save_video
 from trackers import PlayerTracker, BallTracker
-from drawers import (PlayerTracksDrawer, BallTracksDrawer)
+from drawers import (PlayerTracksDrawer, BallTracksDrawer, TeamBallControlDrawer)
 from team_assigner import TeamAssigner
 from ball_acqusition import BallAcquisitionDetector
+from pass_and_interception import PassAndInterceptionDetector
 
 def main(): 
     
-    video_frames = read_video("input_videos/video_1.mp4")
+    video_frames = read_video("input_videos/video_2.mp4")
 
     player_tracker = PlayerTracker("models/player_detector.pt")
     player_tracks = player_tracker.get_object_tracks(video_frames,
@@ -31,8 +32,18 @@ def main():
     ball_acquisition_detector = BallAcquisitionDetector()
     ball_acquisition = ball_acquisition_detector.detect_ball_possession(player_tracks, ball_tracks)
 
+    pass_and_interception_detector = PassAndInterceptionDetector()
+    passes = pass_and_interception_detector.detect_passes(ball_acquisition, player_assignment)
+    interceptions = pass_and_interception_detector.detect_interceptions(ball_acquisition, player_assignment)
+
+
     player_tracks_drawer = PlayerTracksDrawer()
     ball_tracks_drawer = BallTracksDrawer()
+    team_ball_control_drawer = TeamBallControlDrawer()
+
+    output_video_frames = team_ball_control_drawer.draw(video_frames, 
+                                                        player_assignment, 
+                                                        ball_acquisition)
 
     output_video_frames = player_tracks_drawer.draw(video_frames, 
                                                     player_tracks, 
